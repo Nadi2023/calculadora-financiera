@@ -15,6 +15,8 @@ const btnCalcular    = document.getElementById('btnCalcular');
 const cuotaMensualEl    = document.getElementById('cuotaMensual');
 const totalPagarEl      = document.getElementById('totalPagar');
 const totalInteresesEl  = document.getElementById('totalIntereses');
+const receiptResult  = document.getElementById('receiptResult');
+const receiptLoader  = document.getElementById('receiptLoader');
 
 // Actualiza la variable CSS --fill del slider según su valor actual,
 // para que la barra se vea rellena desde el inicio hasta el cursor.
@@ -148,9 +150,22 @@ function calcularPrestamo(){
 
 }
 
-btnCalcular.addEventListener('click', calcularPrestamo);
+btnCalcular.addEventListener('click', () => {
+  // Muestra la animación del billete flotando mientras "calcula"
+  receiptResult.classList.add('fade-out');
+  receiptLoader.classList.add('active');
+
+  // Pequeña espera artificial para que la animación se note antes
+  // de revelar el resultado (no es un cálculo real que tarde).
+  setTimeout(() => {
+    calcularPrestamo();
+    receiptLoader.classList.remove('active');
+    receiptResult.classList.remove('fade-out');
+  }, 900);
+});
 
 // Cálculo inicial al cargar la página con los valores por defecto
+// (sin animación, para que el recibo no aparezca vacío)
 calcularPrestamo();
 
 /* ============================================================
