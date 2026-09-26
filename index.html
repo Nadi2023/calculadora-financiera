@@ -4,289 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora Financiera de Préstamos</title>
-<style>
-  :root{
-    --bg-1:#0f2027;
-    --bg-2:#16323f;
-    --card:#ffffff;
-    --card-soft:#f4f8f9;
-    --ink:#0f2027;
-    --ink-soft:#5b6b70;
-    --accent:#2f9e8f;
-    --accent-dark:#1f7a6d;
-    --gold:#c9a24b;
-    --danger:#c0433f;
-    --radius-lg:20px;
-    --radius-sm:10px;
-    --shadow:0 20px 45px rgba(15,32,39,0.18);
-    font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-  }
-
-  *{box-sizing:border-box;}
-
-  body{
-    margin:0;
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:32px 16px;
-    background:linear-gradient(160deg, var(--bg-1), var(--bg-2) 55%, #1c4550);
-    color:var(--ink);
-  }
-
-  .wrapper{
-    width:100%;
-    max-width:960px;
-    display:flex;
-    flex-direction:column;
-    gap:20px;
-  }
-
-  .brand{
-    text-align:center;
-    color:#eaf3f2;
-  }
-  .brand h1{
-    font-size:1.7rem;
-    font-weight:600;
-    margin:0 0 4px 0;
-    letter-spacing:.3px;
-  }
-  .brand p{
-    margin:0;
-    color:#b9d4d0;
-    font-size:.95rem;
-  }
-
-  .card{
-    background:var(--card);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow);
-    padding:28px 30px 30px;
-  }
-
-  .row{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:22px;
-    margin-bottom:18px;
-  }
-  @media (max-width:640px){
-    .row{grid-template-columns:1fr;}
-  }
-
-  .field label{
-    display:block;
-    font-size:.85rem;
-    color:var(--ink-soft);
-    margin-bottom:6px;
-    font-weight:600;
-  }
-
-  .field .input-line{
-    display:flex;
-    align-items:center;
-    gap:8px;
-    background:var(--card-soft);
-    border-radius:var(--radius-sm);
-    padding:8px 12px;
-    border:1px solid #e1e8e8;
-  }
-
-  .field .input-line input[type="text"]{
-    border:none;
-    background:transparent;
-    font-size:1.05rem;
-    font-weight:600;
-    color:var(--ink);
-    width:100%;
-    outline:none;
-  }
-
-  .field .unit{
-    color:var(--ink-soft);
-    font-size:.9rem;
-  }
-
-  .field input[type="range"]{
-    width:100%;
-    margin-top:10px;
-    -webkit-appearance:none;
-    height:6px;
-    border-radius:6px;
-    background:#dce6e5;
-    outline:none;
-  }
-  .field input[type="range"]::-webkit-slider-thumb{
-    -webkit-appearance:none;
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    background:var(--accent);
-    cursor:pointer;
-    border:3px solid #ffffff;
-    box-shadow:0 2px 6px rgba(0,0,0,.25);
-  }
-  .field input[type="range"]::-moz-range-thumb{
-    width:18px;
-    height:18px;
-    border-radius:50%;
-    background:var(--accent);
-    cursor:pointer;
-    border:3px solid #ffffff;
-    box-shadow:0 2px 6px rgba(0,0,0,.25);
-  }
-
-  .currency-select{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:22px;
-  }
-  .currency-select label{
-    font-size:.85rem;
-    color:var(--ink-soft);
-    font-weight:600;
-  }
-  .currency-select select{
-    padding:8px 12px;
-    border-radius:var(--radius-sm);
-    border:1px solid #e1e8e8;
-    background:var(--card-soft);
-    font-size:1rem;
-    font-weight:600;
-    color:var(--ink);
-  }
-
-  .calc-btn{
-    width:100%;
-    padding:14px;
-    border:none;
-    border-radius:var(--radius-sm);
-    background:var(--accent);
-    color:#fff;
-    font-size:1.05rem;
-    font-weight:700;
-    letter-spacing:.3px;
-    cursor:pointer;
-    transition:background .2s ease, transform .1s ease;
-  }
-  .calc-btn:hover{background:var(--accent-dark);}
-  .calc-btn:active{transform:scale(.99);}
-
-  .result{
-    margin-top:22px;
-    background:linear-gradient(135deg, var(--bg-1), var(--bg-2));
-    border-radius:var(--radius-lg);
-    padding:26px;
-    text-align:center;
-    color:#fff;
-    opacity:0;
-    transform:translateY(10px);
-  }
-  .result.show{
-    animation:reveal .5s ease forwards;
-  }
-  @keyframes reveal{
-    to{opacity:1; transform:translateY(0);}
-  }
-  .result .label{
-    font-size:.85rem;
-    color:#b9d4d0;
-    margin-bottom:6px;
-    font-weight:600;
-  }
-  .result .amount{
-    font-size:2.4rem;
-    font-weight:700;
-    color:var(--gold);
-  }
-  .result .breakdown{
-    margin-top:14px;
-    display:flex;
-    justify-content:center;
-    gap:28px;
-    font-size:.85rem;
-    color:#dcebe9;
-  }
-  .result .breakdown strong{
-    display:block;
-    font-size:1rem;
-    color:#fff;
-  }
-
-  /* ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 6: GRÁFICOS
-     Aquí debe ir el contenedor y el código de la librería de
-     gráficos (ej. Chart.js) que muestre la composición de la
-     cuota (capital vs. interés) o la evolución del saldo.
-     Sugerencia: un <canvas id="graficoAmortizacion"></canvas>
-     dentro de una tarjeta (.card) similar a las de arriba.
-     ============================================================ */
-  .bloque-graficos{
-    /* Estilos para la tarjeta de gráficos - personalizar libremente */
-  }
-  /* ============================================================
-     FIN BLOQUE RESERVADO — INTEGRANTE 6
-     ============================================================ */
-
-  /* ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 7: TABLA DE AMORTIZACIÓN
-     Aquí debe ir el estilo de la tabla mes a mes (cuota, interés,
-     capital amortizado, saldo pendiente). Se recomienda una tabla
-     con scroll interno (max-height + overflow-y:auto) para no
-     romper el layout de la tarjeta principal.
-     ============================================================ */
-  .bloque-tabla-amortizacion{
-    /* Estilos para la tabla de amortización - personalizar libremente */
-  }
-  /* ============================================================
-     FIN BLOQUE RESERVADO — INTEGRANTE 7
-     ============================================================ */
-
-  footer{
-    text-align:center;
-    color:#b9d4d0;
-    font-size:.8rem;
-    margin-top:6px;
-  }
-
-  /* ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 8: PDF Y CRÉDITOS
-     Aquí debe ir el estilo del botón de exportación a PDF y de
-     la sección de créditos del equipo (nombres, roles, etc.).
-     ============================================================ */
-  .bloque-pdf-creditos{
-    /* Estilos para exportar PDF y sección de créditos - personalizar libremente */
-  }
-  /* ============================================================
-     FIN BLOQUE RESERVADO — INTEGRANTE 8
-     ============================================================ */
-</style>
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 <div class="wrapper">
 
   <div class="brand">
-    <h1>Calculadora Financiera de Préstamos</h1>
-    <p>Simula tu cuota mensual ajustando monto, tasa y plazo</p>
+    <h1>Calculadora de préstamos</h1>
+    <p>Completa la ficha y revisa tu comprobante de cuota mensual</p>
   </div>
 
-  <div class="card">
+  <div class="calculator-grid">
 
-    <div class="currency-select">
-      <label for="moneda">Moneda</label>
-      <select id="moneda">
-        <option value="€">€ Euro</option>
-        <option value="$" selected>$ Dólar</option>
-        <option value="£">£ Libra</option>
-        <option value="Bs.">Bs. Bolívar</option>
-      </select>
-    </div>
+    <!-- Panel izquierdo: ficha de solicitud -->
+    <div class="form-panel">
 
-    <div class="row">
+      <div class="segmented" id="segmentoMoneda">
+        <button type="button" data-simbolo="€">EUR</button>
+        <button type="button" data-simbolo="$" class="active">USD</button>
+        <button type="button" data-simbolo="£">GBP</button>
+        <button type="button" data-simbolo="Bs.">BS</button>
+      </div>
+
       <div class="field">
         <label for="montoTexto">Monto del préstamo</label>
         <div class="input-line">
@@ -304,9 +44,7 @@
         </div>
         <input type="range" id="tasaSlider" min="0" max="40" step="0.1" value="12">
       </div>
-    </div>
 
-    <div class="row" style="grid-template-columns:1fr;">
       <div class="field">
         <label for="plazoTexto">Plazo</label>
         <div class="input-line">
@@ -315,195 +53,57 @@
         </div>
         <input type="range" id="plazoSlider" min="1" max="360" step="1" value="36">
       </div>
+
+      <button class="calc-btn" id="btnCalcular">Calcular cuota mensual</button>
     </div>
 
-    <button class="calc-btn" id="btnCalcular">Calcular cuota mensual</button>
+    <!-- Panel derecho: recibo -->
+    <div class="receipt-panel">
+      <div class="receipt-perf"></div>
 
-    <div class="result" id="resultado">
-      <div class="label">Cuota mensual estimada</div>
-      <div class="amount" id="cuotaMensual">$0.00</div>
-      <div class="breakdown">
-        <div>Total a pagar<strong id="totalPagar">$0.00</strong></div>
-        <div>Total de intereses<strong id="totalIntereses">$0.00</strong></div>
+      <div class="receipt-label">Cuota mensual estimada</div>
+      <div class="receipt-amount" id="cuotaMensual">$0.00</div>
+
+      <div class="receipt-line debit">
+        <span>Total de intereses</span>
+        <span id="totalIntereses">$0.00</span>
+      </div>
+      <div class="receipt-line">
+        <span>Total a pagar</span>
+        <span id="totalPagar">$0.00</span>
       </div>
     </div>
 
-    <!-- ============================================================
-         BLOQUE RESERVADO — INTEGRANTE 6: GRÁFICOS
-         Insertar aquí el <canvas> o contenedor del gráfico y, antes
-         del cierre de </body>, el <script> de la librería usada
-         (ej. Chart.js vía CDN) más la lógica que lo alimenta con
-         los datos de "resultadoCalculo" (ver JS más abajo).
-         ============================================================ -->
-    <div class="bloque-graficos" id="bloqueGraficos"></div>
-    <!-- FIN BLOQUE RESERVADO — INTEGRANTE 6 -->
-
-    <!-- ============================================================
-         BLOQUE RESERVADO — INTEGRANTE 7: TABLA DE AMORTIZACIÓN
-         Insertar aquí la tabla mes a mes. Pueden reutilizar la
-         función global "generarTablaAmortizacion()" ya definida
-         en el JS (ver comentario en el bloque de script) para
-         obtener el arreglo de cuotas y renderizarlo en una <table>.
-         ============================================================ -->
-    <div class="bloque-tabla-amortizacion" id="bloqueTablaAmortizacion"></div>
-    <!-- FIN BLOQUE RESERVADO — INTEGRANTE 7 -->
-
-    <!-- ============================================================
-         BLOQUE RESERVADO — INTEGRANTE 8: PDF Y CRÉDITOS
-         Insertar aquí el botón de exportación a PDF (ej. usando
-         jsPDF vía CDN) y la sección de créditos del equipo.
-         ============================================================ -->
-    <div class="bloque-pdf-creditos" id="bloquePdfCreditos"></div>
-    <!-- FIN BLOQUE RESERVADO — INTEGRANTE 8 -->
-
   </div>
+
+  <!-- ============================================================
+       BLOQUE RESERVADO — INTEGRANTES 6 y 7: GRÁFICOS Y TABLA
+       Reemplacen el <p> de aquí adentro por el <canvas> del
+       gráfico (Integrante 6) y la tabla de amortización
+       (Integrante 7). El <script> de cualquier librería externa
+       (ej. Chart.js) va antes de js/script.js. La función global
+       "generarTablaAmortizacion()" y la variable "resultadoCalculo"
+       (ver js/script.js) ya traen los datos calculados.
+       ============================================================ -->
+  <div class="bloque-reservado" id="bloqueReservado">
+    <p>Área reservada para Gráficas y Tabla de Amortización (Integrantes 6 y 7)</p>
+  </div>
+  <!-- FIN BLOQUE RESERVADO — INTEGRANTES 6 y 7 -->
+
+  <!-- ============================================================
+       BLOQUE RESERVADO — INTEGRANTE 8: PDF Y CRÉDITOS
+       Reemplacen el <p> de aquí adentro por el botón de
+       exportación a PDF (ej. usando jsPDF vía CDN) y la sección
+       de créditos del equipo.
+       ============================================================ -->
+  <div class="bloque-pdf-creditos" id="bloquePdfCreditos">
+    <p>Área reservada para Exportación a PDF y Créditos (Integrante 8)</p>
+  </div>
+  <!-- FIN BLOQUE RESERVADO — INTEGRANTE 8 -->
 
   <footer>Proyecto grupal — Calculadora Financiera de Préstamos</footer>
 </div>
 
-<script>
-/* ==========================================================
-   LÓGICA PRINCIPAL — sincronización de inputs y cálculo
-   ========================================================== */
-
-const montoTexto   = document.getElementById('montoTexto');
-const montoSlider   = document.getElementById('montoSlider');
-const tasaTexto     = document.getElementById('tasaTexto');
-const tasaSlider    = document.getElementById('tasaSlider');
-const plazoTexto    = document.getElementById('plazoTexto');
-const plazoSlider   = document.getElementById('plazoSlider');
-const selectMoneda  = document.getElementById('moneda');
-const simboloMonto  = document.getElementById('simboloMonto');
-const btnCalcular   = document.getElementById('btnCalcular');
-const resultadoBox  = document.getElementById('resultado');
-const cuotaMensualEl   = document.getElementById('cuotaMensual');
-const totalPagarEl     = document.getElementById('totalPagar');
-const totalInteresesEl = document.getElementById('totalIntereses');
-
-// Sincroniza un campo de texto con su slider en ambas direcciones
-function sincronizar(texto, slider, formateaSalida){
-  slider.addEventListener('input', () => {
-    texto.value = formateaSalida ? formateaSalida(slider.value) : slider.value;
-    actualizarSimbolos();
-  });
-  texto.addEventListener('input', () => {
-    const valor = parseFloat(texto.value.replace(/[^\d.]/g, ''));
-    if(!isNaN(valor)){
-      const min = parseFloat(slider.min);
-      const max = parseFloat(slider.max);
-      slider.value = Math.min(Math.max(valor, min), max);
-    }
-  });
-}
-
-sincronizar(montoTexto, montoSlider);
-sincronizar(tasaTexto, tasaSlider);
-sincronizar(plazoTexto, plazoSlider);
-
-function actualizarSimbolos(){
-  const simbolo = selectMoneda.value;
-  simboloMonto.textContent = simbolo;
-}
-selectMoneda.addEventListener('change', actualizarSimbolos);
-actualizarSimbolos();
-
-// Formatea un número con separador de miles y 2 decimales
-function formatoMoneda(valor, simbolo){
-  return simbolo + valor.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-/* ----------------------------------------------------------
-   Variable global con el último resultado calculado.
-   Los Integrantes 6 y 7 pueden leer de aquí los datos que
-   necesiten (monto, tasa, plazo, cuota, tabla de amortización)
-   sin tener que recalcular nada por su cuenta.
-   ---------------------------------------------------------- */
-let resultadoCalculo = null;
-
-// Genera el detalle mes a mes (capital, interés, saldo restante)
-// Los Integrantes 6 y 7 pueden llamar a esta función para obtener
-// los datos de cada cuota y así alimentar gráficos o tablas.
-function generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuota){
-  const tabla = [];
-  let saldo = monto;
-  for(let mes = 1; mes <= plazoMeses; mes++){
-    const interesMes = saldo * tasaMensual;
-    const capitalMes = cuota - interesMes;
-    saldo = Math.max(saldo - capitalMes, 0);
-    tabla.push({
-      mes,
-      cuota: cuota,
-      interes: interesMes,
-      capital: capitalMes,
-      saldo: saldo
-    });
-  }
-  return tabla;
-}
-
-function calcularPrestamo(){
-  const monto = parseFloat(montoTexto.value.replace(/[^\d.]/g, '')) || 0;
-  const tasaAnual = parseFloat(tasaTexto.value.replace(/[^\d.]/g, '')) || 0;
-  const plazoMeses = parseInt(plazoTexto.value.replace(/[^\d]/g, '')) || 1;
-  const simbolo = selectMoneda.value;
-
-  const tasaMensual = (tasaAnual / 100) / 12;
-
-  let cuota;
-  if(tasaMensual === 0){
-    cuota = monto / plazoMeses;
-  } else {
-    const factor = Math.pow(1 + tasaMensual, plazoMeses);
-    cuota = monto * (tasaMensual * factor) / (factor - 1);
-  }
-
-  const totalPagar = cuota * plazoMeses;
-  const totalIntereses = totalPagar - monto;
-
-  cuotaMensualEl.textContent = formatoMoneda(cuota, simbolo);
-  totalPagarEl.textContent = formatoMoneda(totalPagar, simbolo);
-  totalInteresesEl.textContent = formatoMoneda(totalIntereses, simbolo);
-
-  resultadoBox.classList.remove('show');
-  void resultadoBox.offsetWidth; // fuerza reinicio de la animación
-  resultadoBox.classList.add('show');
-
-  // Guarda el resultado en la variable global y genera la tabla
-  // de amortización para que los siguientes bloques la usen.
-  resultadoCalculo = {
-    monto, tasaAnual, plazoMeses, simbolo,
-    cuotaMensual: cuota,
-    totalPagar, totalIntereses,
-    tabla: generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuota)
-  };
-
-  /* ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 6 y 7
-     Si necesitan disparar el redibujado del gráfico o de la
-     tabla justo después de cada cálculo, este es el lugar
-     indicado: llamen aquí a sus propias funciones, por ejemplo:
-       actualizarGrafico(resultadoCalculo);
-       renderizarTablaAmortizacion(resultadoCalculo.tabla);
-     ============================================================ */
-
-}
-
-btnCalcular.addEventListener('click', calcularPrestamo);
-
-// Cálculo inicial al cargar la página con los valores por defecto
-calcularPrestamo();
-
-</script>
-
-<!-- ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 8: SCRIPT DE PDF
-     Si usan una librería externa como jsPDF, agreguen aquí el
-     <script src="..."> del CDN y, debajo, la función que arma el
-     PDF a partir de "resultadoCalculo" (definida en el bloque de
-     script principal).
-     ============================================================ -->
-
-<!-- FIN BLOQUE RESERVADO — INTEGRANTE 8 -->
-
+<script src="js/script.js"></script>
 </body>
 </html>

@@ -1,0 +1,323 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;600&display=swap');
+
+:root{
+  --paper:#efe6d3;
+  --paper-soft:#f6f0e2;
+  --ink:#1c2b39;
+  --ink-soft:#5c6b74;
+  --rule:#c9bfa4;
+  --credit:#3f6b52;
+  --debit:#8a3324;
+  --highlight:#c98a2b;
+  --font-display:'Fraunces', serif;
+  --font-mono:'IBM Plex Mono', monospace;
+  --font-body:'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+*{box-sizing:border-box;}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:40px 16px;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--font-body);
+}
+
+.wrapper{
+  width:100%;
+  max-width:940px;
+}
+
+.brand{
+  margin-bottom:26px;
+}
+.brand h1{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:2rem;
+  margin:0 0 6px 0;
+  color:var(--ink);
+}
+.brand p{
+  margin:0;
+  color:var(--ink-soft);
+  font-size:.95rem;
+}
+
+.calculator-grid{
+  display:grid;
+  grid-template-columns:1.15fr .85fr;
+  gap:0;
+  border:1px solid var(--rule);
+  background:var(--paper-soft);
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 18px 40px -20px rgba(28,43,57,0.25);
+}
+@media (max-width:720px){
+  .calculator-grid{grid-template-columns:1fr; border-radius:14px;}
+}
+
+/* ---------- Panel izquierdo: ficha de solicitud ---------- */
+.form-panel{
+  padding:32px 34px;
+  border-right:1px solid var(--rule);
+}
+@media (max-width:720px){
+  .form-panel{border-right:none; border-bottom:1px solid var(--rule);}
+}
+
+.segmented{
+  display:inline-flex;
+  gap:2px;
+  padding:3px;
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:999px;
+  margin-bottom:28px;
+}
+.segmented button{
+  font-family:var(--font-mono);
+  font-size:.8rem;
+  background:none;
+  border:none;
+  padding:7px 15px;
+  cursor:pointer;
+  color:var(--ink-soft);
+  border-radius:999px;
+  transition:background-color .25s ease, color .25s ease, box-shadow .25s ease;
+}
+.segmented button:hover{color:var(--ink);}
+.segmented button.active{
+  background:var(--ink);
+  color:var(--paper-soft);
+  box-shadow:0 4px 10px -4px rgba(28,43,57,0.5);
+}
+
+.field{
+  padding:18px 0;
+  border-bottom:1px dashed var(--rule);
+}
+.field:first-of-type{padding-top:0;}
+
+.field label{
+  display:block;
+  font-size:.85rem;
+  color:var(--ink-soft);
+  margin-bottom:8px;
+}
+
+.field .input-line{
+  display:flex;
+  align-items:baseline;
+  gap:6px;
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:10px;
+  padding:10px 14px;
+  transition:border-color .2s ease, box-shadow .2s ease;
+}
+.field .input-line:focus-within{
+  border-color:var(--ink);
+  box-shadow:0 0 0 3px rgba(28,43,57,0.08);
+}
+
+.field .input-line input[type="text"]{
+  border:none;
+  background:transparent;
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+  font-size:1.3rem;
+  font-weight:600;
+  color:var(--ink);
+  width:100%;
+  outline:none;
+  padding:0;
+}
+
+.field .unit{
+  font-family:var(--font-mono);
+  color:var(--ink-soft);
+  font-size:.9rem;
+  white-space:nowrap;
+}
+
+.field input[type="range"]{
+  width:100%;
+  margin-top:14px;
+  -webkit-appearance:none;
+  height:4px;
+  border-radius:4px;
+  outline:none;
+  /* --fill se actualiza desde JS con el % recorrido del slider */
+  background:linear-gradient(to right,
+    var(--highlight) 0%, var(--highlight) var(--fill, 0%),
+    var(--rule) var(--fill, 0%), var(--rule) 100%);
+}
+.field input[type="range"]::-webkit-slider-thumb{
+  -webkit-appearance:none;
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  background:var(--ink);
+  border:2px solid var(--paper-soft);
+  box-shadow:0 1px 4px rgba(28,43,57,0.4);
+  cursor:pointer;
+  margin-top:-6px;
+}
+.field input[type="range"]::-moz-range-thumb{
+  width:16px;
+  height:16px;
+  border-radius:50%;
+  border:2px solid var(--paper-soft);
+  background:var(--ink);
+  box-shadow:0 1px 4px rgba(28,43,57,0.4);
+  cursor:pointer;
+}
+.field input[type="range"]::-moz-range-track{
+  height:4px;
+  border-radius:4px;
+  background:transparent;
+}
+
+.calc-btn{
+  width:100%;
+  margin-top:26px;
+  padding:14px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper-soft);
+  font-family:var(--font-body);
+  font-size:.95rem;
+  font-weight:600;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease;
+}
+.calc-btn:hover{
+  background:var(--paper-soft);
+  color:var(--ink);
+}
+
+/* ---------- Panel derecho: recibo ---------- */
+.receipt-panel{
+  padding:36px 30px 30px;
+  background:var(--paper-soft);
+  position:relative;
+  box-shadow:inset 8px 0 24px -20px rgba(28,43,57,0.35);
+}
+
+.receipt-perf{
+  position:absolute;
+  top:0; left:0; right:0;
+  height:10px;
+  background-image:radial-gradient(circle at 10px 0, var(--paper) 5px, transparent 5.5px);
+  background-size:20px 10px;
+  background-repeat:repeat-x;
+}
+
+.receipt-label{
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  letter-spacing:.02em;
+  color:var(--ink-soft);
+  margin:14px 0 6px;
+}
+
+.receipt-amount{
+  font-family:var(--font-mono);
+  font-variant-numeric:tabular-nums;
+  font-size:2.9rem;
+  font-weight:600;
+  color:var(--highlight);
+  line-height:1.1;
+  min-height:1.1em;
+  text-shadow:0 2px 10px rgba(201,138,43,0.18);
+}
+
+.receipt-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:baseline;
+  font-family:var(--font-mono);
+  font-size:.85rem;
+  color:var(--ink);
+  padding:12px 0;
+  position:relative;
+  margin-top:8px;
+}
+.receipt-line::before{
+  content:"";
+  position:absolute;
+  top:0; left:0; right:0;
+  border-top:1.5px dashed var(--rule);
+}
+.receipt-line span:first-child{color:var(--ink-soft);}
+.receipt-line.debit span:last-child{color:var(--debit); font-weight:600;}
+.receipt-line.credit span:last-child{color:var(--credit); font-weight:600;}
+.receipt-line:last-child{
+  font-weight:600;
+  font-size:.92rem;
+}
+
+footer{
+  text-align:center;
+  color:var(--ink-soft);
+  font-size:.8rem;
+  margin-top:22px;
+}
+
+/* ============================================================
+   BLOQUE RESERVADO — INTEGRANTES 6 y 7: GRÁFICOS Y TABLA
+   Reemplacen el contenido de este contenedor (el <p> placeholder
+   incluido) por su gráfico y su tabla de amortización. Pueden
+   dividirlo en dos columnas internas si lo prefieren. Usen las
+   variables --ink, --credit, --debit, --highlight y --font-mono
+   para mantener la coherencia visual con el resto de la página.
+   La función global "generarTablaAmortizacion()" y la variable
+   "resultadoCalculo" (definidas en js/script.js) ya traen los
+   datos calculados, listos para usar.
+   ============================================================ */
+.bloque-reservado{
+  margin-top:24px;
+  padding:34px 24px;
+  border:1.5px dashed var(--rule);
+  border-radius:14px;
+  background:transparent;
+  text-align:center;
+}
+.bloque-reservado p{
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:.85rem;
+  color:var(--ink-soft);
+}
+/* FIN BLOQUE RESERVADO — INTEGRANTES 6 y 7 */
+
+/* ============================================================
+   BLOQUE RESERVADO — INTEGRANTE 8: PDF Y CRÉDITOS
+   Reemplacen el contenido de este contenedor por el botón de
+   exportación a PDF (ej. usando jsPDF) y la sección de créditos
+   del equipo. Mismo tratamiento visual (borde punteado) que el
+   bloque anterior, para que ambos luzcan consistentes hasta que
+   se complete el contenido final.
+   ============================================================ */
+.bloque-pdf-creditos{
+  margin-top:20px;
+  padding:34px 24px;
+  border:1.5px dashed var(--rule);
+  border-radius:14px;
+  background:transparent;
+  text-align:center;
+}
+.bloque-pdf-creditos p{
+  margin:0;
+  font-family:var(--font-mono);
+  font-size:.85rem;
+  color:var(--ink-soft);
+}
+/* FIN BLOQUE RESERVADO — INTEGRANTE 8 */
