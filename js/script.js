@@ -1,8 +1,8 @@
-/* ==========================================================
-   LÓGICA PRINCIPAL — sincronización de inputs y cálculo
-   ========================================================== */
+/* ============================================================
+   LÓGICA PRINCIPAL – sincronización de inputs y cálculo
+   ============================================================ */
 
-const montoTexto    = document.getElementById('montoTexto');
+const montoTexto     = document.getElementById('montoTexto');
 const montoSlider    = document.getElementById('montoSlider');
 const tasaTexto      = document.getElementById('tasaTexto');
 const tasaSlider     = document.getElementById('tasaSlider');
@@ -10,168 +10,189 @@ const plazoTexto     = document.getElementById('plazoTexto');
 const plazoSlider    = document.getElementById('plazoSlider');
 const segmentoMoneda = document.getElementById('segmentoMoneda');
 const simboloMonto   = document.getElementById('simboloMonto');
-let monedaActual = '$';
+let monedaActual     = '$';
 const btnCalcular    = document.getElementById('btnCalcular');
-const cuotaMensualEl    = document.getElementById('cuotaMensual');
-const totalPagarEl      = document.getElementById('totalPagar');
-const totalInteresesEl  = document.getElementById('totalIntereses');
+const cuotaMensualEl = document.getElementById('cuotaMensual');
+const totalPagarEl   = document.getElementById('totalPagar');
+const totalInteresesEl = document.getElementById('totalIntereses');
 const receiptResult  = document.getElementById('receiptResult');
 const receiptLoader  = document.getElementById('receiptLoader');
 
+// Variable global para almacenar la instancia del gráfico (Integrante 6)
+let graficoInstancia = null;
+
 // Actualiza la variable CSS --fill del slider según su valor actual,
 // para que la barra se vea rellena desde el inicio hasta el cursor.
-function actualizarRelleno(slider){
+function actualizarRelleno(slider) {
+  if (!slider) return;
   const min = parseFloat(slider.min);
   const max = parseFloat(slider.max);
-  const valor = parseFloat(slider.value);
-  const porcentaje = ((valor - min) / (max - min)) * 100;
-  slider.style.setProperty('--fill', porcentaje + '%');
+  const val = parseFloat(slider.value);
+  const porcentaje = ((val - min) / (max - min)) * 100;
+  slider.style.setProperty('--fill', `${porcentaje}%`);
 }
 
-// Sincroniza un campo de texto con su slider en ambas direcciones
-function sincronizar(texto, slider){
-  actualizarRelleno(slider); // relleno inicial al cargar la página
-
+// Sincroniza slider e input de texto bidireccionalmente
+function sincronizarInput(slider, input) {
+  if (!slider || !input) return;
   slider.addEventListener('input', () => {
-    texto.value = slider.value;
+    input.value = slider.value;
     actualizarRelleno(slider);
-    actualizarSimbolos();
   });
-  texto.addEventListener('input', () => {
-    const valor = parseFloat(texto.value.replace(/[^\d.]/g, ''));
-    if(!isNaN(valor)){
-      const min = parseFloat(slider.min);
-      const max = parseFloat(slider.max);
-      slider.value = Math.min(Math.max(valor, min), max);
-      actualizarRelleno(slider);
-    }
+  input.addEventListener('input', () => {
+    let val = parseFloat(input.value) || 0;
+    slider.value = val;
+    actualizarRelleno(slider);
   });
+  actualizarRelleno(slider);
 }
 
-sincronizar(montoTexto, montoSlider);
-sincronizar(tasaTexto, tasaSlider);
-sincronizar(plazoTexto, plazoSlider);
+// Inicializar la sincronización de los tres campos de entrada
+sincronizarInput(montoSlider, montoTexto);
+sincronizarInput(tasaSlider, tasaTexto);
+sincronizarInput(plazoSlider, plazoTexto);
 
-function actualizarSimbolos(){
-  simboloMonto.textContent = monedaActual;
-}
-
-// Segmentado de moneda: al hacer clic en un botón, se marca como
-// activo, se actualiza el símbolo y se recalcula automáticamente.
-segmentoMoneda.querySelectorAll('button').forEach(boton => {
-  boton.addEventListener('click', () => {
-    segmentoMoneda.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    boton.classList.add('active');
-    monedaActual = boton.dataset.simbolo;
-    actualizarSimbolos();
-    calcularPrestamo();
-  });
-});
-
-actualizarSimbolos();
-
-// Formatea un número con separador de miles y 2 decimales
-function formatoMoneda(valor, simbolo){
-  return simbolo + valor.toLocaleString('es-ES', {minimumFractionDigits:2, maximumFractionDigits:2});
-}
-
-/* ----------------------------------------------------------
-   Variable global con el último resultado calculado.
-   Los Integrantes 6 y 7 pueden leer de aquí los datos que
-   necesiten (monto, tasa, plazo, cuota, tabla de amortización)
-   sin tener que recalcular nada por su cuenta.
-   ---------------------------------------------------------- */
-let resultadoCalculo = null;
-
-// Genera el detalle mes a mes (capital, interés, saldo restante).
-// Los Integrantes 6 y 7 pueden llamar a esta función para obtener
-// los datos de cada cuota y así alimentar gráficos o tablas.
-function generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuota){
-  const tabla = [];
-  let saldo = monto;
-  for(let mes = 1; mes <= plazoMeses; mes++){
-    const interesMes = saldo * tasaMensual;
-    const capitalMes = cuota - interesMes;
-    saldo = Math.max(saldo - capitalMes, 0);
-    tabla.push({
-      mes,
-      cuota: cuota,
-      interes: interesMes,
-      capital: capitalMes,
-      saldo: saldo
+// Cambio de moneda activa
+if (segmentoMoneda) {
+  const botonesMoneda = segmentoMoneda.querySelectorAll('button');
+  botonesMoneda.forEach(btn => {
+    btn.addEventListener('click', () => {
+      botonesMoneda.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      monedaActual = btn.getAttribute('data-simbolo') || '$';
+      if (simboloMonto) simboloMonto.textContent = monedaActual;
     });
-  }
-  return tabla;
+  });
 }
 
-function calcularPrestamo(){
-  const monto = parseFloat(montoTexto.value.replace(/[^\d.]/g, '')) || 0;
-  const tasaAnual = parseFloat(tasaTexto.value.replace(/[^\d.]/g, '')) || 0;
-  const plazoMeses = parseInt(plazoTexto.value.replace(/[^\d]/g, '')) || 1;
-  const simbolo = monedaActual;
+// Evento del botón para realizar los cálculos y mostrar la animación de loader
+if (btnCalcular) {
+  btnCalcular.addEventListener('click', () => {
+    if (receiptResult && receiptLoader) {
+      receiptResult.style.display = 'none';
+      receiptLoader.style.display = 'block';
+    }
+
+    setTimeout(() => {
+      calcularPrestamo();
+      if (receiptResult && receiptLoader) {
+        receiptLoader.style.display = 'none';
+        receiptResult.style.display = 'block';
+      }
+      const bloqueReservado = document.getElementById('bloqueReservado');
+      if (bloqueReservado) bloqueReservado.style.display = 'block';
+    }, 500);
+  });
+}
+
+// Función principal para realizar los cálculos financieros del préstamo
+function calcularPrestamo() {
+  const monto = parseFloat(montoTexto.value) || 0;
+  const tasaAnual = parseFloat(tasaTexto.value) || 0;
+  const plazoMeses = parseInt(plazoTexto.value) || 0;
 
   const tasaMensual = (tasaAnual / 100) / 12;
 
-  let cuota;
-  if(tasaMensual === 0){
-    cuota = monto / plazoMeses;
+  let cuotaMensual = 0;
+  if (tasaMensual === 0) {
+    cuotaMensual = monto / plazoMeses;
   } else {
-    const factor = Math.pow(1 + tasaMensual, plazoMeses);
-    cuota = monto * (tasaMensual * factor) / (factor - 1);
+    cuotaMensual = monto * (tasaMensual / (1 - Math.pow(1 + tasaMensual, -plazoMeses)));
   }
 
-  const totalPagar = cuota * plazoMeses;
-  const totalIntereses = totalPagar - monto;
+  // Generación de la tabla de amortización e intereses totales
+  const totalIntereses = generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuotaMensual);
+  const totalPagar = monto + totalIntereses;
 
-  cuotaMensualEl.textContent = formatoMoneda(cuota, simbolo);
-  totalPagarEl.textContent = formatoMoneda(totalPagar, simbolo);
-  totalInteresesEl.textContent = formatoMoneda(totalIntereses, simbolo);
+  // Actualizar el panel del recibo
+  if (cuotaMensualEl) cuotaMensualEl.textContent = `${monedaActual}${cuotaMensual.toFixed(2)}`;
+  if (totalInteresesEl) totalInteresesEl.textContent = `${monedaActual}${totalIntereses.toFixed(2)}`;
+  if (totalPagarEl) totalPagarEl.textContent = `${monedaActual}${totalPagar.toFixed(2)}`;
 
-  // Guarda el resultado en la variable global y genera la tabla
-  // de amortización para que los siguientes bloques la usen.
-  resultadoCalculo = {
-    monto, tasaAnual, plazoMeses, simbolo,
-    cuotaMensual: cuota,
-    totalPagar, totalIntereses,
-    tabla: generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuota)
-  };
-
-  /* ============================================================
-     BLOQUE RESERVADO — INTEGRANTE 6 y 7
-     Si necesitan disparar el redibujado del gráfico o de la
-     tabla justo después de cada cálculo, este es el lugar
-     indicado: llamen aquí a sus propias funciones, por ejemplo:
-       actualizarGrafico(resultadoCalculo);
-       renderizarTablaAmortizacion(resultadoCalculo.tabla);
-     Si prefieren un archivo propio (ej. js/graficos.js), solo
-     enlácenlo en index.html antes de este script.js y llamen
-     su función aquí mismo.
-     ============================================================ */
-
+  // ============================================================
+  // Actualización de la Gráfica Dinámica
+  // ============================================================
+  actualizarGrafico(monto, totalIntereses);
 }
 
-btnCalcular.addEventListener('click', () => {
-  // Muestra la animación del billete flotando mientras "calcula"
-  receiptResult.classList.add('fade-out');
-  receiptLoader.classList.add('active');
-
-  // Pequeña espera artificial para que la animación se note antes
-  // de revelar el resultado (no es un cálculo real que tarde).
-  setTimeout(() => {
-    calcularPrestamo();
-    receiptLoader.classList.remove('active');
-    receiptResult.classList.remove('fade-out');
-  }, 900);
-});
-
-// Cálculo inicial al cargar la página con los valores por defecto
-// (sin animación, para que el recibo no aparezca vacío)
-calcularPrestamo();
 
 /* ============================================================
-   BLOQUE RESERVADO — INTEGRANTE 8: PDF
-   Si usan una librería externa como jsPDF, agreguen su
-   <script src="..."> en index.html (antes de este archivo) y
-   escriban aquí la función que arma el PDF a partir de
-   "resultadoCalculo" (definida arriba en este mismo archivo).
+   BLOQUE DE CÓDIGO — INTEGRANTE 6: TABLA Y GRÁFICOS
    ============================================================ */
+
+// Función para generar dinámicamente la tabla de desglose de pagos mes a mes
+function generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuotaMensual) {
+  let saldo = monto;
+  let totalIntereses = 0;
+  const tbody = document.querySelector('#tablaAmortizacion tbody');
+
+  if (tbody) tbody.innerHTML = ''; // Limpia ejecuciones anteriores
+
+  for (let mes = 1; mes <= plazoMeses; mes++) {
+    let interesMes = saldo * tasaMensual;
+    let capitalMes = cuotaMensual - interesMes;
+
+    saldo -= capitalMes;
+    if (saldo < 0.01) saldo = 0; // Previene saldo negativo por redondeo decimal
+
+    totalIntereses += interesMes;
+
+    // Inyectar fila mes a mes en la tabla
+    if (tbody) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${mes}</td>
+        <td>${monedaActual}${cuotaMensual.toFixed(2)}</td>
+        <td>${monedaActual}${capitalMes.toFixed(2)}</td>
+        <td>${monedaActual}${interesMes.toFixed(2)}</td>
+        <td>${monedaActual}${saldo.toFixed(2)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+
+  return totalIntereses;
+}
+
+// INTEGRANTE 6: Función con Chart.js para renderizar y actualizar el gráfico dinámico (Capital vs Intereses)
+function actualizarGrafico(capital, intereses) {
+  const canvas = document.getElementById('graficoPrestamo');
+  if (!canvas) return;
+
+  const ctx = canvas.getContext('2d');
+
+  // Si ya existe una gráfica previa, se destruye para que se redibuje limpiamente
+  if (graficoInstancia) {
+    graficoInstancia.destroy();
+  }
+
+  // Generación del gráfico pastel con Chart.js
+  graficoInstancia = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: ['Capital Principal', 'Intereses Totales'],
+      datasets: [{
+        data: [capital.toFixed(2), intereses.toFixed(2)],
+        backgroundColor: ['#2563eb', '#ef4444'], // Azul para capital, rojo para intereses
+        borderColor: '#ffffff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom'
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return ` ${monedaActual}${context.parsed.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
