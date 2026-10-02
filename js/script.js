@@ -135,6 +135,14 @@ function calcularPrestamo(){
     totalPagar, totalIntereses,
     tabla: generarTablaAmortizacion(monto, tasaMensual, plazoMeses, cuota)
   };
+    // Redibuja los gráficos del Integrante 7 — Cash Flow + Cash Balance
+  if(typeof actualizarVisualizaciones === 'function'){
+    actualizarVisualizaciones(resultadoCalculo);
+  }
+    // Redibuja el gráfico pastel y la tabla del Integrante 6 — Pastel + Tabla
+  if(typeof actualizarVisualizacionesI6 === 'function'){
+    actualizarVisualizacionesI6(resultadoCalculo);
+  }
 
   /* ============================================================
      BLOQUE RESERVADO — INTEGRANTE 6 y 7

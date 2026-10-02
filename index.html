@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,6 +6,79 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora Financiera de Préstamos</title>
 <link rel="stylesheet" href="css/styles.css">
+<style>
+  .bloque-reservado{
+    margin-top:30px;
+    padding:28px 24px;
+    background:var(--paper-soft);
+    border:1px solid var(--rule);
+    border-radius:14px;
+    box-shadow:0 12px 30px -22px rgba(28,43,57,0.35);
+  }
+
+  .bloque-reservado h3{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.05rem;
+    color:var(--ink);
+    margin:0 0 14px;
+  }
+
+  .chart-container{
+    position:relative;
+    height:300px;
+    width:100%;
+    display:flex;
+    justify-content:center;
+    margin-bottom:30px;
+  }
+  .chart-container canvas{
+    width:100% !important;
+    height:100% !important;
+    display:block;
+  }
+
+  .table-container{
+    overflow:auto;
+    max-height:340px;
+    margin-top:20px;
+    border:1px solid var(--rule);
+    border-radius:10px;
+    background:var(--paper);
+  }
+  .table-container::-webkit-scrollbar{width:8px;height:8px;}
+  .table-container::-webkit-scrollbar-thumb{
+    background:var(--rule);border-radius:8px;
+  }
+
+  #tablaAmortizacion{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--font-mono);
+    font-size:.8rem;
+    font-variant-numeric:tabular-nums;
+    color:var(--ink);
+  }
+  #tablaAmortizacion th,
+  #tablaAmortizacion td{
+    padding:9px 14px;
+    text-align:right;
+    border-bottom:1px solid var(--rule);
+    white-space:nowrap;
+  }
+  #tablaAmortizacion th{
+    position:sticky;
+    top:0;
+    background:var(--paper-soft);
+    font-weight:600;
+    z-index:1;
+    border-bottom:1.5px solid var(--rule);
+  }
+  #tablaAmortizacion th:first-child,
+  #tablaAmortizacion td:first-child{text-align:left;}
+  #tablaAmortizacion tbody tr:hover{background:rgba(201,138,43,0.08);}
+  #tablaAmortizacion tbody tr:last-child td{border-bottom:none;}
+</style>
 </head>
 <body>
 
@@ -76,13 +150,14 @@
       </div>
 
       <!-- Animación breve de "calculando" mostrada al presionar el botón -->
-      <div class="receipt-loader" id="receiptLoader">
+      <div class="receipt-loader" id="receiptLoader" style="display: none; text-align: center; padding: 20px;">
         <svg class="bill" viewBox="0 0 64 40" width="60" height="38">
           <rect x="1.5" y="1.5" width="61" height="37" rx="6" fill="var(--paper)" stroke="var(--ink)" stroke-width="2"/>
           <circle cx="32" cy="20" r="8.5" fill="none" stroke="var(--highlight)" stroke-width="2"/>
           <line x1="8" y1="9" x2="15" y2="9" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round"/>
           <line x1="49" y1="31" x2="56" y2="31" stroke="var(--ink)" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
+        <br>
         <span class="receipt-loader-text">Calculando<span class="dots"><span>.</span><span>.</span><span>.</span></span></span>
       </div>
     </div>
@@ -99,9 +174,47 @@
        (ver js/script.js) ya traen los datos calculados.
        ============================================================ -->
   <div class="bloque-reservado" id="bloqueReservado">
-    <p>Área reservada para Gráficas y Tabla de Amortización (Integrantes 6 y 7)</p>
+    
+    <!-- INTEGRANTE 6: Gráfico dinámico de distribución (Capital vs Intereses) -->
+    <h3 style="text-align: center; margin-bottom: 20px;">Distribución del Préstamo (Capital vs Intereses)</h3>
+    <div class="chart-container">
+      <!-- Canvas donde la librería Chart.js renderiza la gráfica circular/pastel -->
+      <canvas id="graficoPrestamo"></canvas>
+    </div>
+
+    <!-- INTEGRANTE 7 — Diagrama de Flujo de Efectivo -->
+    <h3 style="text-align:center; margin-top:30px;">Diagrama de Flujo de Efectivo</h3>
+    <div class="chart-container">
+      <canvas id="cashFlowChart"></canvas>
+    </div>
+
+    <!-- INTEGRANTE 7 — Cuadro de Saldo de Efectivo -->
+    <h3 style="text-align:center; margin-top:30px;">Cuadro de Saldo de Efectivo</h3>
+    <div class="chart-container">
+      <canvas id="balanceChart"></canvas>
+    </div>
+
+    <!-- INTEGRANTE 7: Tabla de Amortización con desglose de pagos mes a mes -->
+    <h3 style="text-align: center; margin-top: 30px;">Tabla de Amortización</h3>
+    <div class="table-container">
+      <table id="tablaAmortizacion">
+        <thead>
+          <tr>
+            <th>Mes</th>
+            <th>Cuota</th>
+            <th>Capital</th>
+            <th>Intereses</th>
+            <th>Saldo Restante</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Las filas con los datos calculados se inyectan dinámicamente desde JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
   </div>
-  <!-- FIN BLOQUE RESERVADO — INTEGRANTES 6 y 7 -->
+  <!-- FIN BLOQUE RESERVADO — INTEGRANTES 6 -->
 
   <!-- ============================================================
        BLOQUE RESERVADO — INTEGRANTE 8: PDF Y CRÉDITOS
@@ -109,14 +222,41 @@
        exportación a PDF (ej. usando jsPDF vía CDN) y la sección
        de créditos del equipo.
        ============================================================ -->
-  <div class="bloque-pdf-creditos" id="bloquePdfCreditos">
-    <p>Área reservada para Exportación a PDF y Créditos (Integrante 8)</p>
-  </div>
+      <!-- ============================================================
+         BLOQUE — INTEGRANTE 7: EXPORTACIÓN A PDF
+         ============================================================ -->
+    <div class="bloque-pdf-creditos" id="bloquePdfCreditos" style="margin-top:20px; text-align:center;">
+      <h3 style="margin:0 0 16px; font-family:var(--font-display); color:var(--ink);">
+        Exportar resultados
+      </h3>
+      <button class="pdf-btn" id="btnPDF" type="button">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        Generar comprobante PDF
+      </button>
+      <p class="pdf-hint" style="margin:12px 0 0; font-family:var(--font-mono); font-size:.75rem; color:var(--ink-soft);">
+        Incluye resumen, diagramas y espacio para tu análisis de resultados.
+      </p>
+    </div>
+    <!-- FIN BLOQUE — INTEGRANTE 7 -->
   <!-- FIN BLOQUE RESERVADO — INTEGRANTE 8 -->
 
   <footer>Proyecto grupal — Calculadora Financiera de Préstamos</footer>
 </div>
 
+<!-- Librería externa Chart.js cargada vía CDN para dibujar las gráficas (debe ir antes de js/script.js) -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="js/integrante6.js"></script>
+<script src="js/graficos.js"></script>
+<script src="js/pdf.js"></script>
+
+<!-- Script de la lógica principal del proyecto -->
 <script src="js/script.js"></script>
 </body>
 </html>
