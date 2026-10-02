@@ -334,20 +334,35 @@ footer{
    "resultadoCalculo" (definidas en js/script.js) ya traen los
    datos calculados, listos para usar.
    ============================================================ */
-.bloque-reservado{
-  margin-top:24px;
-  padding:34px 24px;
-  border:1.5px dashed var(--rule);
-  border-radius:14px;
-  background:transparent;
-  text-align:center;
+
+/* Botón PDF — Integrante 7 */
+.pdf-btn{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:13px 28px;
+  border:1px solid var(--ink);
+  background:var(--ink);
+  color:var(--paper-soft);
+  font-family:var(--font-body);
+  font-size:.95rem;
+  font-weight:600;
+  border-radius:999px;
+  cursor:pointer;
+  transition:transform .2s ease, background .25s ease, color .25s ease,
+             box-shadow .25s ease, border-color .25s ease;
+  box-shadow:0 12px 24px -12px rgba(28,43,57,0.55);
 }
-.bloque-reservado p{
-  margin:0;
-  font-family:var(--font-mono);
-  font-size:.85rem;
-  color:var(--ink-soft);
+.pdf-btn:hover{
+  background:var(--highlight);
+  border-color:var(--highlight);
+  color:var(--ink);
+  transform:translateY(-2px);
+  box-shadow:0 16px 28px -12px rgba(201,138,43,0.65);
 }
+.pdf-btn:active{transform:translateY(0);}
+.pdf-btn:disabled{opacity:.65; cursor:progress; transform:none;}
+
 /* FIN BLOQUE RESERVADO — INTEGRANTES 6 y 7 */
 
 /* ============================================================
@@ -373,3 +388,171 @@ footer{
   color:var(--ink-soft);
 }
 /* FIN BLOQUE RESERVADO — INTEGRANTE 8 */
+
+/* ============================================================
+   INTRODUCCIÓN Y GUÍA DE USO
+   ============================================================ */
+.intro-section{
+  margin-bottom:28px;
+  padding:22px 26px;
+  background:var(--paper-soft);
+  border:1px solid var(--rule);
+  border-radius:14px;
+  box-shadow:0 6px 18px -14px rgba(28,43,57,0.25);
+  font-family:var(--font-body);
+  color:var(--ink);
+  line-height:1.6;
+}
+.intro-title{
+  font-family:var(--font-display);
+  font-size:1.15rem;
+  font-weight:600;
+  margin:0 0 10px;
+  color:var(--ink);
+}
+.intro-text{
+  margin:0 0 14px;
+  font-size:.9rem;
+  color:var(--ink-soft);
+}
+.intro-subtitle{
+  font-family:var(--font-display);
+  font-size:1rem;
+  font-weight:600;
+  margin:0 0 8px;
+  color:var(--ink);
+}
+.intro-instrucciones{
+  margin:0;
+  padding-left:20px;
+  font-size:.88rem;
+  color:var(--ink-soft);
+}
+.intro-instrucciones li{
+  margin-bottom:6px;
+}
+
+/* ============================================================
+   CRÉDITOS ESTUDIANTILES — tarjeta con efecto de ladeo
+   ============================================================ */
+.creditos-card{
+  position:relative;
+  margin-top:24px;
+  padding:28px 26px;
+  background:var(--paper-soft);
+  border:1px solid var(--rule);
+  border-radius:14px;
+  box-shadow:0 12px 30px -22px rgba(28,43,57,0.35);
+  cursor:pointer;
+  transition:transform .5s ease, box-shadow .5s ease;
+  transform-style:preserve-3d;
+  overflow:hidden;
+  user-select:none;
+  min-height:220px;
+}
+
+/* Estado ladeado al hacer clic */
+.creditos-card.volteada{
+  transform:perspective(800px) rotateY(8deg) rotateX(-3deg);
+  box-shadow:-8px 14px 34px -18px rgba(28,43,57,0.45);
+}
+
+/* Cara frontal */
+.creditos-front{
+  transition:opacity .4s ease;
+}
+.creditos-card.volteada .creditos-front{
+  opacity:0;
+  pointer-events:none;
+}
+
+/* Cara trasera (contacto) */
+.creditos-back{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:28px 26px;
+  opacity:0;
+  transition:opacity .4s ease .15s;
+  text-align:center;
+}
+.creditos-card.volteada .creditos-back{
+  opacity:1;
+}
+
+/* Tipografía interna */
+.creditos-card h3{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1.05rem;
+  color:var(--ink);
+  margin:0 0 12px;
+}
+.creditos-card ul{
+  list-style:none;
+  padding:0;
+  margin:0;
+}
+.creditos-card li{
+  font-family:var(--font-mono);
+  font-size:.82rem;
+  color:var(--ink-soft);
+  padding:4px 0;
+}
+.creditos-hint{
+  font-family:var(--font-mono);
+  font-size:.72rem;
+  color:var(--highlight);
+  margin:0 0 14px;
+}
+.creditos-back p{
+  font-family:var(--font-body);
+  font-size:.9rem;
+  color:var(--ink-soft);
+  margin:0 0 12px;
+}
+.correo-coordinador{
+  font-family:var(--font-mono);
+  font-size:1rem;
+  font-weight:600;
+  color:var(--highlight);
+  text-decoration:none;
+  border-bottom:2px dashed var(--highlight);
+  padding-bottom:2px;
+}
+.correo-coordinador:hover{
+  color:var(--ink);
+  border-color:var(--ink);
+}
+
+/* ============================================================
+   REFERENCIA BIBLIOGRÁFICA — APA 7.ᵃ ed.
+   ============================================================ */
+.referencia-apa{
+  margin-top:24px;
+  padding:20px 26px;
+  background:var(--paper-soft);
+  border:1px solid var(--rule);
+  border-radius:14px;
+  text-align:center;
+}
+.referencia-apa h3{
+  font-family:var(--font-display);
+  font-weight:600;
+  font-size:1rem;
+  color:var(--ink);
+  margin:0 0 10px;
+}
+.cita-apa{
+  font-family:var(--font-mono);
+  font-size:.84rem;
+  color:var(--ink-soft);
+  margin:0;
+  line-height:1.6;
+  text-indent:-2em;
+  padding-left:2em;
+  text-align:left;
+}
